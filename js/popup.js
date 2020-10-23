@@ -2,18 +2,21 @@
 
 var pageMode = 'lightified';
 let goDark = document.getElementById("goDark");
+let alwaysDark = document.getElementById("alwaysDark");
 
 goDark.onclick = function(event) {
-  console.log("Go dark: isCurrentPageDarkified: ", isCurrentPageDarkified());
+  console.log("[Popup] Go dark: isCurrentPageDarkified: ", isCurrentPageDarkified());
   isCurrentPageDarkified() ? lightify() : darkify ();
 }
 
+alwaysDark.onclick = function(event) {
+  event.target.checked ? darkify() : null;
+  chrome.storage.sync.set({ alwaysDark: event.target.checked});
+}
 
 let darkify = function(){
   changePageMode({ setPageMode: 'darkified' });
-
-  goDark.textContent = "You're Darks!";
-  goDark.classList.add('btn-pressed');
+  turnDarkModeOn();
 }
 
 let lightify = function(){
@@ -21,6 +24,11 @@ let lightify = function(){
 
   goDark.textContent = "Become Darks";
   goDark.classList.remove('btn-pressed');
+}
+
+let turnDarkModeOn = function(){
+  goDark.textContent = "You're Darks!";
+  goDark.classList.add('btn-pressed');
 }
 
 let isCurrentPageDarkified = () => { return (pageMode === 'darkified'); }
@@ -38,20 +46,13 @@ let changePageMode = function(message){
 let init = function(){
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     chrome.tabs.sendMessage(tabs[0].id, {getInitialPageMode: 'getInitialPageMode'},function(response) {
-
-      console.log(" ------- Opening popup -------- ");
-
-      console.log("1. setPageMode", response, response.pageMode);
       setPageMode(response.pageMode);
-      console.log("2. isCurrentPageDarkified", isCurrentPageDarkified());
-
-      console.log(" ----------------- ");
-
-      if (isCurrentPageDarkified()) {
-        goDark.classList.add('btn-pressed');
-        goDark.textContent = "You're Darks!"
-      }
+      isCurrentPageDarkified() ? turnDarkModeOn() : null;
     });
+  });
+
+  chrome.storage.sync.get(['alwaysDark'], function(data) {
+    alwaysDark.checked = (data.alwaysDark === true)
   });
 }
 

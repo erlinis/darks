@@ -3,6 +3,7 @@
   "name": "I am Darks",
   "version": "1.0",
   "description": "Turns the current page to a rough dark mode",
+  "permissions": ["storage"],
   "icons": {
     "16": "images/get_started16.png",
     "32": "images/get_started32.png",

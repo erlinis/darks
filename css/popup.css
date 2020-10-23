@@ -67,3 +67,21 @@ button{
   box-shadow: 0 3px #543, 0 10px 5px black;
   transform: translateY(5px);
 }
+
+.form-group {
+  width: 100%;
+  padding: 8px 0px 8px 0px;
+}
+
+.form-group label {
+  color:#fff;
+  vertical-align: center;
+  font-size: 0.9em;
+  cursor: pointer;
+}
+
+.form-group input[type$='checkbox'] {
+  text-align: center;
+  padding: 30px;
+  cursor: pointer;
+}
