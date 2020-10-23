@@ -1,57 +1,45 @@
 'use strict';
 
-var pageMode = 'lightified';
-let goDark = document.getElementById("goDark");
+const DARK_MODE = 'darkified';
+const LIGTH_MODE = 'lightified';
+
+let pageMode = LIGTH_MODE;
+let switchBtn = document.getElementById("switch");
 let alwaysDark = document.getElementById("alwaysDark");
 
-goDark.onclick = function(event) {
-  console.log("[Popup] Go dark: isCurrentPageDarkified: ", isCurrentPageDarkified());
-  isCurrentPageDarkified() ? lightify() : darkify ();
-}
+switchBtn.onclick = () => isCurrentPageDarkified() ? darkeModeOff() : darkModeOn ();
 
-alwaysDark.onclick = function(event) {
-  event.target.checked ? darkify() : null;
+alwaysDark.onclick = (event) => {
+  event.target.checked ? darkModeOn() : null;
   chrome.storage.sync.set({ alwaysDark: event.target.checked});
 }
 
-let darkify = function(){
-  changePageMode({ setPageMode: 'darkified' });
-  turnDarkModeOn();
+let darkModeOn = () => changePageMode({ setPageMode: DARK_MODE });
+
+let darkeModeOff = () => changePageMode({ setPageMode: LIGTH_MODE })
+
+let isCurrentPageDarkified = () => pageMode === DARK_MODE;
+
+let setPageMode = (mode) => pageMode = mode;
+
+let toggleSwitch = () => {
+  switchBtn.textContent = isCurrentPageDarkified() ? "You're Darks!" : "Become Darks";
+  switchBtn.classList.toggle('btn-pressed', isCurrentPageDarkified());
 }
 
-let lightify = function(){
-  changePageMode({ setPageMode: 'lightified' });
-
-  goDark.textContent = "Become Darks";
-  goDark.classList.remove('btn-pressed');
-}
-
-let turnDarkModeOn = function(){
-  goDark.textContent = "You're Darks!";
-  goDark.classList.add('btn-pressed');
-}
-
-let isCurrentPageDarkified = () => { return (pageMode === 'darkified'); }
-
-let setPageMode = (mode) => { pageMode = mode; }
-
-let changePageMode = function(message){
+let changePageMode = (message) => {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    chrome.tabs.sendMessage(tabs[0].id, message, function(response) {
+    chrome.tabs.sendMessage(tabs[0].id, message, (response) => {
       setPageMode(response.pageMode);
+      toggleSwitch();
     });
   });
 }
 
-let init = function(){
-  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    chrome.tabs.sendMessage(tabs[0].id, {getInitialPageMode: 'getInitialPageMode'},function(response) {
-      setPageMode(response.pageMode);
-      isCurrentPageDarkified() ? turnDarkModeOn() : null;
-    });
-  });
+let init = () => {
+  changePageMode({ getInitialPageMode: 'getInitialPageMode' });
 
-  chrome.storage.sync.get(['alwaysDark'], function(data) {
+  chrome.storage.sync.get(['alwaysDark'], (data) => {
     alwaysDark.checked = (data.alwaysDark === true)
   });
 }
