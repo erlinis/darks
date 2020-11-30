@@ -4,12 +4,12 @@ const DARK_MODE = 'darkified';
 const LIGTH_MODE = 'lightified';
 const DARK_MODE_STYLE_HTML = `
   html, img:not([src$="*.svg"]), span[role='img'] {
-    transition: color 500ms, background-color 500ms;
-    filter: invert(98%);
+    transition: color 400ms, background-color 400ms;
+    filter: invert(98%) hue-rotate(180deg);
   }
 
-  video, svg {
-    filter: invert(98%);
+  video, svg, picture, figure {
+    filter: invert(98%) hue-rotate(180deg);
   }
 `;
 
